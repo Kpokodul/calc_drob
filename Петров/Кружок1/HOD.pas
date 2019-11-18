@@ -1,8 +1,10 @@
 program one;
 var
   a, b:integer;
-  function NOD(a, b:integer):integer;
+  function NOK(a, b:integer):integer;
+  var NOK1:integer;
   begin
+  NOK1 := a * b;
   while a <> b do
   begin
     if a > b then
@@ -10,9 +12,9 @@ var
     else
       b := b - a;
   end;
-  NOD := a;
+   NOK := NOK1 div b;
   end;
 begin
   read(a, b);
-  writeln(NOD(a, b));
+  writeln('ÕŒ  = ',NOK(a, b));
 end.
