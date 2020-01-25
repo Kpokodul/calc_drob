@@ -1,0 +1,173 @@
+program one;
+var
+  {Числитель и знаменатель первой дроби}
+  a, b: integer;
+  {Числитель и знаменатель второй дроби}
+  c, d: integer;
+  {Числитель для сложенной дроби}
+  newCislit, tempCislit: integer;
+  newZnam, tempZnam:integer;
+  {Целая часть}
+  newCel:integer;
+  {Целая часть первой дроби(Ввод)}
+  one_whole_part:integer;
+  {Целая часть второй дроби(Ввод)}
+  two_whole_part:integer;
+  {Целая часть вычесленной дроби}
+  answer_whole_part:integer;
+  {Выбор действия}
+  znak: char;
+  {Нахождение НОКа для двух не подсчитанных дробей для приведения их в последующим к общему знаменателю}
+  function NOK(a, b:integer):integer;
+  var NOD:integer;
+  begin
+  NOD := a * b;
+  while a <> b do
+  begin
+    if a > b then
+      a := a - b
+    else
+      b := b - a;
+  end;
+    NOK := NOD div b;
+  end;
+  {Приведение двух не подсчитаных дробей к общему знаменателю}
+  function PkO3(a, b, nk:integer):integer;
+  begin
+    nk := nk div b;
+    a := a * nk;
+    PkO3 := a;
+  end;
+  {Нахождение НОДа для сокращения посчитанной дроби}
+  function NOD(j, k:integer):integer;
+  begin
+    while j <> k do
+      begin
+      if j > k then
+        j := j - k
+      else
+        k := k - j;
+      end;
+    NOD := k;
+  end;
+  {Целая часть смешенного числа при переводе из неправильной дроби}
+  function FindCel(a, b:integer):integer;
+  var res1:integer;
+  begin
+    res1 := a div b;
+    FindCel := res1;
+  end;
+  {Дробная часть(числитель) смешенного числа при переводе из неправильной дроби}
+  function FindCislit(a, b:integer):integer;
+  var res2:integer;
+  begin
+    res2 := a mod b;
+    FindCislit := res2;
+  end;
+  {Числитель неправильной дроби}
+  function Translation_from_mixed_to_incorrect(a, b, c:integer):integer;
+  var final:integer;
+  begin
+    final:= a * b + c;
+    Translation_from_mixed_to_incorrect := final;
+  end;
+  {НАЧАЛО ПРОГРАММЫ}
+begin
+  writeln('Введи целую часть 1 дроби: ');
+  readln(one_whole_part);
+  writeln('Введи числитель и знаменатель 1 дроби: ');
+  readln(a);
+  writeln('--');
+  readln(b);
+  writeln('Введи целую часть 2 дроби: ');
+  readln(two_whole_part);
+  writeln('Введи числитель и знаменатель 2 дроби: ');
+  read(c);
+  writeln('--');
+  readln(d);
+  
+  {Перевод в неправильную дробь}
+  if (one_whole_part) > 0 then
+     begin
+      a := Translation_from_mixed_to_incorrect(one_whole_part, b, a);
+     end;
+  if (two_whole_part) > 0 then
+    begin
+      c := Translation_from_mixed_to_incorrect(two_whole_part, d, c);
+    end;
+  
+  writeln('Выбирите действия:');
+  read(znak);
+  
+  case znak of
+    '1', '2': {Сложение}
+    begin
+      
+      newZnam:=NOK(b,d); {Приведение к общему знаменателю}
+      if znak='1' then
+      newCislit := PkO3(a, b, newZnam) + PkO3(c, d, newZnam) {Сложение числителей}
+      else newCislit := PkO3(a, b, newZnam) - PkO3(c, d, newZnam); {Вычитание числителей}
+      
+      {Сокращение}
+      if NOD(newCislit, newZnam)>1 then
+      begin
+        tempCislit:=newCislit;
+        tempZnam:=newZnam;
+        newCislit := newCislit div NOD(tempCislit, tempZnam);
+        newZnam := newZnam div NOD(tempCislit, tempZnam);
+      end;
+      
+      if newCislit = newZnam then
+      begin
+        newCel := 1;
+        newCislit := 0;
+        newZnam := 0;
+      end;
+      
+      {Выделение целой части}
+      if newCislit > newZnam then
+      begin
+        newCel := FindCel(newCislit, newZnam);
+        newCislit := FindCislit(newCislit, newZnam);
+      end;
+    end;
+    
+    '3', '4': {Умножение и деление}
+    begin
+      
+      
+      if znak='3' then
+      begin
+        newCislit := a * c; {Умножение числителей}
+        newZnam := b * d; {Умножение знаменателей}
+      end
+      else
+      begin
+        newCislit := a * d; {Умножение числителя первой дроби на знаменателя второй}
+        newZnam := b * c; {Умножение знаменателя первой дроби на числитель второй}
+      end;
+      
+      {Сокращение}
+      if NOD(newCislit, newZnam)>1 then
+      begin
+        tempCislit:=newCislit;
+        tempZnam:=newZnam;
+        newCislit := newCislit div NOD(tempCislit, tempZnam);
+        newZnam := newZnam div NOD(tempCislit, tempZnam);
+      end;
+  
+      {Выделение целой части}
+      if newCislit > newZnam then
+      begin
+        newCel := FindCel(newCislit, newZnam);
+        newCislit := FindCislit(newCislit, newZnam);
+      end;
+        
+    end;
+    
+    else write('error!')
+   end;
+    {Вывод результата}
+    writeln('Ответ: ', newCel, ' и ', newCislit, ' / ',newZnam);
+     
+end.
